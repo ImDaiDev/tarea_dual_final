@@ -1,4 +1,4 @@
-name: Django CI/CD con Render
+name: Django CI con Docker
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout del código
       uses: actions/checkout@v3
@@ -20,8 +21,10 @@ jobs:
         echo "ALLOWED_HOSTS=localhost,127.0.0.1" >> .env
         echo "DB_ENGINE=django.db.backends.postgresql" >> .env
         echo "DB_NAME=postgres" >> .env
+        
         echo "DB_USER=${{ secrets.DB_USER }}" >> .env
         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+        
         echo "DB_HOST=db" >> .env
         echo "DB_PORT=5432" >> .env
 
@@ -40,11 +43,3 @@ jobs:
     - name: Apagar contenedores
       if: always()
       run: docker compose down
-
-  deploy:
-    needs: build-and-test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Disparar Deploy en Render
-        run: curl "${{ secrets.RENDER_DEPLOY_HOOK }}"

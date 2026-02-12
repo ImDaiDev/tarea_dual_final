@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#hola
 import os
 import sys
 
